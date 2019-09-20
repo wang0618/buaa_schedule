@@ -39,7 +39,8 @@ class ICSHandler(RequestHandler):
         except:
             open('%s/../error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
             raise
-        cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute)
+        apple_cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute)
+        cal = CalUtil.get_calander(schedules, alarm_minute=None)  # outlook不支持提醒设置
 
         # CalUtil.save_cal('out.ics', cal)
 
@@ -48,9 +49,12 @@ class ICSHandler(RequestHandler):
         key = md5(raw_data)
         filename = '%s.ics' % key
         token = q.upload_token(qiniu_bucket_name, filename, 3600 * 24 * 200)
-        ret, info = put_data(token, filename, cal.to_ical(), mime_type='text/calendar')
+        put_data(token, filename, cal.to_ical(), mime_type='text/calendar')
 
-        assert ret['key'] == filename
+        filename = '%s_apple.ics' % key
+        token = q.upload_token(qiniu_bucket_name, filename, 3600 * 24 * 200)
+        put_data(token, filename, apple_cal.to_ical(), mime_type='text/calendar')
+
         self.succeed(key)
 
     def succeed(self, data=''):

@@ -1,7 +1,7 @@
 # 在IOS平台上将课表写入日历
 > 如果您通过微信浏览本页面，请先选择”在浏览器中打开“
 
-1. [点此](webcal://static.wecqu.com/your key.ics?_t=RANDOM) 或将`webcal://static.wecqu.com/your key.ics?_t=RANDOM`复制到Safari浏览器订阅课表
+1. [点此](webcal://static.wecqu.com/your key_apple.ics?_t=RANDOM) 或将`webcal://static.wecqu.com/your key_apple.ics?_t=RANDOM`复制到Safari浏览器订阅课表
 2. 打开系统日历，就可以看到课表了。
 3. 可以将日程小部件加入通知栏上，更方便地查看课程。
 ![](./static/img/ios_4.jpg)

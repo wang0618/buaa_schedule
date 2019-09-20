@@ -106,16 +106,17 @@ class CalUtil:
             event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c[5], c[6], c[7]))
             event.add('location', c[4])
 
-            # 添加提醒
-            alarm = Alarm()
-            alarm.add('trigger', timedelta(minutes=-alarm_minute))
-            alarm.add('action', 'display')
-            event.add_component(alarm)
+            if alarm_minute != None:
+                # 添加提醒, outlook 网页版貌似不支持提醒设置
+                alarm = Alarm()
+                alarm.add('trigger', timedelta(minutes=-alarm_minute))
+                alarm.add('action', 'display')
+                event.add_component(alarm)
 
             yield event
 
     @classmethod
-    def get_calander(cls, classtables, use_recurrence=False, alarm_minute=15):
+    def get_calander(cls, classtables, use_recurrence=False, alarm_minute=None):
         """
         :param classtables: [(0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他),..]
         :param use_recurrence: 是否使用 循环事件 生成ics, 某些日历软件可能无法识别使用 循环事件 生成的ics

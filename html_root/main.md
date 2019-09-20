@@ -21,10 +21,10 @@ request.onload = function() {
   }
 };
 request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-request.send('data='+encodeURIComponent(document.getElementsByClassName('Timetable-content')[0].innerHTML));
+request.send('alarm_minute=15&data='+encodeURIComponent(document.getElementsByClassName('Timetable-content')[0].innerHTML));
 
 ```
-
+> 默认提前15分钟进行课程提醒，若要更改，请更改上方代码最后一行的`alarm_minute=15`部分，将15改成想要的时间。
 之后根据页面提示进行操作。
 
 

@@ -32,8 +32,10 @@ class ICSHandler(RequestHandler):
     @coroutine
     def post(self):
         raw_data = self.get_body_argument('data')
+        alarm_minute = int(self.get_body_argument('alarm_minute', 15))
+
         schedules = extract_schedule(raw_data)
-        cal = CalUtil.get_calander(schedules)
+        cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute)
 
         # CalUtil.save_cal('out.ics', cal)
 

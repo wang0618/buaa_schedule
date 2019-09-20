@@ -5,7 +5,7 @@ import logging
 from datetime import datetime, date, timedelta
 
 import pytz
-from icalendar import Calendar, Event, vDatetime
+from icalendar import Calendar, Event, vDatetime, Alarm
 
 
 class ClassTime:
@@ -87,7 +87,11 @@ class CalUtil:
         return event
 
     @classmethod
-    def __get_events(cls, c):
+    def __get_events(cls, c, alarm_minute=15):
+        """
+        :param c: 课程列表
+        :param alarm_minute: 提醒时间
+        """
         # (0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他)
         for week in c[1]:
             event = Event()
@@ -101,13 +105,21 @@ class CalUtil:
                 continue
             event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c[5], c[6], c[7]))
             event.add('location', c[4])
+
+            # 添加提醒
+            alarm = Alarm()
+            alarm.add('trigger', timedelta(minutes=-alarm_minute))
+            alarm.add('action', 'display')
+            event.add_component(alarm)
+
             yield event
 
     @classmethod
-    def get_calander(cls, classtables, use_recurrence=False):
+    def get_calander(cls, classtables, use_recurrence=False, alarm_minute=15):
         """
         :param classtables: [(0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他),..]
         :param use_recurrence: 是否使用 循环事件 生成ics, 某些日历软件可能无法识别使用 循环事件 生成的ics
+        :param alarm_minute: 提前提醒时间
         :return:
         """
         cal = Calendar()
@@ -121,10 +133,9 @@ class CalUtil:
                 cal.add_component(cls.__get_recurrence_event(i))
             else:
                 try:
-                    for event in cls.__get_events(i):
+                    for event in cls.__get_events(i, alarm_minute=alarm_minute):
                         cal.add_component(event)
                 except Exception as e:
-                    raise
                     logging.error('Got Exception:' + str(e))
         return cal
 
@@ -146,3 +157,6 @@ if __name__ == '__main__':
 
     data = open('../data/data.html', encoding='utf8').read()
     res = extract_schedule(data)
+    ClassTime.set_startday(2019, 9, 2)
+    cal = CalUtil.get_calander(res, False)
+    CalUtil.save_cal('out.ics1', cal)

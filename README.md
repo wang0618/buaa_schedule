@@ -13,3 +13,9 @@
 `pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt`
 4. 运行
 `python -m server.run --port=5000`
+
+或直接使用Docker部署(依然需要前两步)：
+```
+docker build -t buaa .
+docker run --name buaa_schedule -v `pwd`:/usr/src/app/ -p 127.0.0.1:5000:5000 -d buaa python3 -m server.run --port=5000
+```

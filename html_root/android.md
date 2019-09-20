@@ -1,4 +1,5 @@
 # 在安卓平台上将课表写入日历
+> 如果您通过微信浏览本页面，请先选择”在浏览器中打开“
 1. [点此](http://static.wecqu.com/iCal%20Import%20Export%20CalDAV_v3.2v188.apk) 下载iCal Import Export应用(大小3.7MB)
 2. [点此](http://static.wecqu.com/your key.ics?_t=RANDOM) 或复制下载链接 `http://static.wecqu.com/your key.ics?_t=RANDOM` 到浏览器，下载课表文件
 3. 打开下载好的课表文件，选择”使用iCal Import Export“打开

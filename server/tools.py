@@ -52,12 +52,9 @@ def extract_schedule(raw_data):
                     weeks = list(range(int(time_info.group(1)), int(time_info.group(2)) + 1))
                     time = (int(time_info.group(3)), int(time_info.group(4)))
                     address = infos[2].text()
-                    class_no = infos[3].text()
+                    # class_no = infos[3].text()
 
-                    res.append(ScheduleItem(name, weeks, day, time, address, teacher, class_no, credit))
-
-    for i in res:
-        print(i)
+                    res.append(ScheduleItem(name, weeks, day, time, address, teacher, '', credit))
     return res
 
 

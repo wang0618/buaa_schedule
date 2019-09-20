@@ -34,7 +34,11 @@ class ICSHandler(RequestHandler):
         raw_data = self.get_body_argument('data')
         alarm_minute = int(self.get_body_argument('alarm_minute', 15))
 
-        schedules = extract_schedule(raw_data)
+        try:
+            schedules = extract_schedule(raw_data)
+        except:
+            open('%s/error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
+            raise
         cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute)
 
         # CalUtil.save_cal('out.ics', cal)

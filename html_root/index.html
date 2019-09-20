@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>在日历中查看课表</title>
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <link rel="stylesheet" href="./static/mditor.min.css"/>
+    <link rel="stylesheet" href="./static/entry.css"/>
+    <style>
+        .markdown-body strong {
+            font-weight: bold;
+        }
+
+        .entry h2:before, h3:before, h4:before, h5:before, h6:before {
+            content: none !important;
+        }
+    </style>
+</head>
+
+<body class="markdown-body entry">
+<div id="markdown">
+</div>
+</body>
+<script src="./static/mditor.min.js"></script>
+<script src="./static/app.js"></script>
+<script>
+    if (!GET.md)
+        GET.md = 'main';
+
+
+    var parser = new Mditor.Parser();
+
+    var request = new XMLHttpRequest();
+    request.open('GET', GET.md + '.md', true);
+
+    request.onload = function () {
+        if (this.status >= 200 && this.status < 400) {
+            var resp = this.response.replace(/your key/g, GET.key);
+            document.getElementById('markdown').innerHTML = parser.parse(resp);
+        }
+    };
+
+    request.onerror = function () {
+        document.getElementById('markdown').innerHTML = "网络错误，请刷新重试";
+
+    };
+
+    request.send();
+
+
+</script>
+</html>

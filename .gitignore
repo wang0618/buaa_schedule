@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+*.sqlite3
+
+.qiniu_pythonsdk_hostscache.json
+
+.idea/
+
+/log
+
+/data

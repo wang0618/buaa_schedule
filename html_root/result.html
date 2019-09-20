@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>课表解析完成</title>
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <link rel="stylesheet" href="./static/mditor.min.css"/>
+    <link rel="stylesheet" href="./static/entry.css"/>
+    <style>
+        .markdown-body strong {
+            font-weight: bold;
+        }
+
+        .entry h2:before, h3:before, h4:before, h5:before, h6:before {
+            content: none !important;
+        }
+    </style>
+</head>
+
+<body class="markdown-body entry">
+<div id="markdown">
+# 课表解析完成
+你可以选择将课表导入不同平台的日历应用中
+## 移动端平台（安卓/IOS）
+<div id="qrcode"></div>
+请扫描上方二维码，然后按照指示操作。
+
+## 其他平台
+[Win10](./?md=win10&key=your key)
+[Google日历](./?md=google&key=your key)
+</div>
+</body>
+<script src="./static/mditor.min.js"></script>
+<script src="./static/qrcode.min.js"></script>
+<script src="./static/app.js"></script>
+<script>
+    if (!GET.key)
+        window.location.href = '/';
+
+    var parser = new Mditor.Parser();
+    document.getElementById('markdown').innerHTML = parser.parse(document.getElementById('markdown').innerHTML.replace(/your key/g, GET.key));
+    new QRCode(document.getElementById("qrcode"), 'http://' + window.location.host + '/?md=platforms&key=' + GET.key);
+</script>
+</html>

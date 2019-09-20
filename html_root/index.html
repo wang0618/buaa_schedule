@@ -35,7 +35,8 @@
 
     request.onload = function () {
         if (this.status >= 200 && this.status < 400) {
-            var resp = this.response.replace(/your key/g, GET.key);
+            var random = ''+ (new Date()).getMilliseconds();
+            var resp = this.response.replace(/your key/g, GET.key).replace(/RANDOM/g, random);
             document.getElementById('markdown').innerHTML = parser.parse(resp);
         }
     };

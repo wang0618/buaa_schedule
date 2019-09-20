@@ -27,10 +27,12 @@ request.send('data='+encodeURIComponent(document.getElementsByClassName('Timetab
 
 之后根据页面提示进行操作。
 
+
+
 ## 关于本项目
 ### 反馈
 邮件 `wang0.618&qq.com` (将&替换成@)
 ### 隐私相关
 本项目需要将您的课表数据保存至服务器端，但课表数据中不包含您的身份信息，不会造成隐私泄露。
 ### 项目代码
-项目已在github开源: [https://github.com/wang0618](https://github.com/wang0618)
+项目已在github开源: [https://github.com/wang0618/buaa_schedule](https://github.com/wang0618/buaa_schedule)

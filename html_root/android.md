@@ -9,3 +9,6 @@
 6. 将日历小部件添加到桌面可以更方便地查看课表
 ![](./static/img/android_3.jpg)
 
+## 其他
+ - iCal Import Export应用的Google商店链接为`https://play.google.com/store/apps/details?id=tk.drlue.icalimportexport`
+ - 课表发生更新时，需要重新导入，只需重新执行此教程即可自动删除之前课表事件，添加新课表

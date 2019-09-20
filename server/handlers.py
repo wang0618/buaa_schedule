@@ -2,7 +2,7 @@ import json
 import os
 from tempfile import NamedTemporaryFile
 
-from qiniu import Auth, put_file
+from qiniu import Auth, put_data
 from tornado.gen import coroutine
 from tornado.web import RequestHandler
 from tornado.web import StaticFileHandler
@@ -39,19 +39,15 @@ class ICSHandler(RequestHandler):
 
         # CalUtil.save_cal('out.ics', cal)
 
-        fd = NamedTemporaryFile(delete=False)
-        fd.write(cal.to_ical())
-
         # 保存到七牛云上
         q = Auth(qiniu_access_key, qiniu_secret_key)
         key = md5(raw_data)
         filename = '%s.ics' % key
         token = q.upload_token(qiniu_bucket_name, filename, 3600 * 24 * 200)
-        ret, info = put_file(token, filename, fd.name, mime_type='text/calendar')
+        ret, info = put_data(token, filename, cal.to_ical(), mime_type='text/calendar')
 
         assert ret['key'] == filename
         self.succeed(key)
-        os.remove(fd.name)
 
     def succeed(self, data=''):
         self.write(json.dumps({'data': data, 'status': True}))

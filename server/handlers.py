@@ -37,7 +37,7 @@ class ICSHandler(RequestHandler):
         try:
             schedules = extract_schedule(raw_data)
         except:
-            open('%s/error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
+            open('%s/../error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
             raise
         cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute)
 

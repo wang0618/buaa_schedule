@@ -7,7 +7,7 @@
 ![Win10效果图](./static/img/win10_4.png)
 
 ## 使用方法
-电脑端使用Chrome打开课表页面(调选课 -> 已选课程)，然后在课表页面下按F12打开Chrome调试面板，在`console`栏中粘贴以下代码，并按下回车执行。
+电脑端使用Chrome打开课表页面(调选课 -> 已选课程)，然后在课表页面下按F12打开Chrome调试面板，在`console`栏中粘贴以下代码，并按下回车执行。之后根据页面提示进行操作。
 ```js
 var request = new XMLHttpRequest();
 request.open('POST', 'http://buaa.wecqu.com/api/ics', true);

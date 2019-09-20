@@ -4,10 +4,12 @@
 2. [点此](http://static.wecqu.com/your key.ics?_t=RANDOM) 或复制下载链接 `http://static.wecqu.com/your key.ics?_t=RANDOM` 到浏览器，下载课表文件
 3. 打开下载好的课表文件，选择”使用iCal Import Export“打开
 ![](./static/img/android_1.jpg)
-4. 在”Calendar tag“输入框里填入`buaa`；展开Reminder选项，勾选”Create reminder“即可设置上课提醒（默认提前15分钟提醒，可自定义提醒时间）
+
+4. 选择一个日历账户进行课表导入，你也可以创建新日历账户
+5. 在”Calendar tag“输入框里填入`buaa`；展开Reminder选项，勾选”Create reminder“即可设置上课提醒（默认提前15分钟提醒，可自定义提醒时间）
 ![](./static/img/android_2.jpg)
-5. 点击右下角红色按钮完成导入，导入成功后即可删除该应用
-6. 将日历小部件添加到桌面可以更方便地查看课表
+6. 点击右下角红色按钮完成导入，导入成功后即可删除该应用
+7. 将日历小部件添加到桌面可以更方便地查看课表
 ![](./static/img/android_3.jpg)
 
 ## 其他

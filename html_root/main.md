@@ -19,7 +19,7 @@ request.onload = function() {
   }
 };
 request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-request.send('alarm_minute=15&data='+encodeURIComponent(document.getElementsByClassName('Timetable-content')[0].innerHTML));
+request.send('alarm_minute=15&data='+encodeURIComponent(document.getElementsByClassName('Timetable-content')[0].innerHTML)+'&f='+window.location.hash.substr(2,10));
    
    
 ```

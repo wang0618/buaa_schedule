@@ -7,7 +7,7 @@
 ![Win10效果图](./static/img/win10_4.png)
 
 ## 使用方法
-电脑端使用Chrome打开课表页面(调选课 -> 已选课程)，然后在课表页面下按F12打开Chrome调试面板，在`console`栏中粘贴以下代码，并按下回车执行。之后根据页面提示进行操作。
+电脑端使用Chrome打开课表页面(调选课 -> 已选课程)，然后在课表页面下按F12打开Chrome调试面板，在`console`栏中粘贴以下代码，并按下回车执行。之后根据页面提示选择导入不同平台。
 ```js
 var request = new XMLHttpRequest();
 request.open('POST', 'http://buaa.wecqu.com/api/ics', true);
@@ -26,6 +26,9 @@ request.send('alarm_minute=15&data='+encodeURIComponent(document.getElementsByCl
 > 默认提前15分钟进行课程提醒，若要更改，请更改上方代码最后一行的`alarm_minute=15`部分，将15改成想要的时间再回车执行代码，仅支持IOS平台设置。
 
 ![](./static/img/console.png)
+
+
+
 ## 关于本项目
 ### 反馈
 邮件 `wang0.618&qq.com` (将&替换成@)

@@ -5,6 +5,6 @@
 ![](./static/img/google_0.png)
 3. 在日历网址栏输入`http://static.wecqu.com/your key.ics?_t=RANDOM`，并选择”添加日历“
 ![](./static/img/google_1.png)
-4. 返回主界面就可以看到课表了。
-5. 可以对课表账户进行重命名，来使用自定义日历名称。
+4. 返回主界面就可以看到课表了
+5. 可以对课表账户进行重命名，来使用自定义日历名称
 ![](./static/img/google_2.png)

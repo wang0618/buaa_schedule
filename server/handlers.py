@@ -39,7 +39,7 @@ class ICSHandler(RequestHandler):
         except:
             open('%s/../error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
             raise
-        apple_cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute)
+        apple_cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute, use_recurrence=True)  # ios平台开启提醒和循环事件
         cal = CalUtil.get_calander(schedules, alarm_minute=None)  # outlook不支持提醒设置
 
         # CalUtil.save_cal('out.ics', cal)

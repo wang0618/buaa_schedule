@@ -70,8 +70,9 @@ class CalUtil:
             except AssertionError as e:
                 logging.error('get a error in classtime:' + str(e))
                 continue
-            res.append(vDatetime(t).to_ical())
-        return ','.join(res)
+            res.append(t)
+        # return b','.join(res)
+        return res
 
     @classmethod
     def __get_recurrence_event(cls, c):
@@ -82,7 +83,8 @@ class CalUtil:
         event.add('dtend', ClassTime.get_class_time(c[1][0], c[2], c[3][1], False))
         event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c[5], c[6], c[7]))
         event.add('location', c[4])
-        event['RDATE;TZID=Asia/Shanghai'] = cls.__get_rdate(c[1], c[2], c[3])
+        event.add('RDATE', cls.__get_rdate(c[1], c[2], c[3]), parameters=dict(TZID='Asia/Shanghai'))
+        # event['RDATE;TZID=Asia/Shanghai'] = cls.__get_rdate(c[1], c[2], c[3])
         # event['rrule'] = vText('FREQ=WEEKLY;COUNT=5;INTERVAL=2')
         return event
 
@@ -159,5 +161,5 @@ if __name__ == '__main__':
     data = open('../data/data.html', encoding='utf8').read()
     res = extract_schedule(data)
     ClassTime.set_startday(2019, 9, 2)
-    cal = CalUtil.get_calander(res, False)
-    CalUtil.save_cal('out.ics1', cal)
+    cal = CalUtil.get_calander(res, True)
+    CalUtil.save_cal('out.ics', cal)

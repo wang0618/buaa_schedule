@@ -35,7 +35,8 @@ request.send('alarm_minute='+alarm_minute+'&trans='+trans+'&data='+encodeURIComp
 
 ```
 <div onclick="copy_code(this)" class="btn">点此复制以上代码</div> <div class="clearfix"></div>
-![](./static/img/console.png)
+
+![在Console栏中粘贴代码](./static/img/console.png)
 
 
 ## 关于本项目

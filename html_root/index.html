@@ -14,6 +14,52 @@
         .entry h2:before, h3:before, h4:before, h5:before, h6:before {
             content: none !important;
         }
+
+        h2 {
+            margin-top: 20px !important;
+        }
+
+        .btn {
+            margin: 12px 20px 0px 20px !important;
+            float: left;
+            color: #494949 !important;
+            text-transform: uppercase;
+            text-decoration: none;
+            background: #ffffff;
+            padding: 4px 10px !important;
+            border: 2px solid #494949 !important;
+            border-radius: 6px;
+            display: inline-block;
+            transition: all 0.4s ease 0s;
+        }
+
+        .btn:hover {
+            cursor: pointer;
+            background: #eee;
+            transition: all 0.2s ease 0s;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        #new_address {
+            margin-left: 20px;
+            padding: 0px;
+            overflow: auto;
+            font-size: 85%;
+            line-height: 1.45;
+            background-color: #f6f8fa;
+            border-radius: 3px;
+        }
+
+        br {
+            height: 0 !important;
+            /*display: none !important;*/
+        }
+
     </style>
 </head>
 
@@ -27,27 +73,75 @@
     if (!GET.md)
         GET.md = 'main';
 
-
+    var inject_code; // chrome中要执行的代码
     var parser = new Mditor.Parser();
 
+    // 获取内容
     var request = new XMLHttpRequest();
     request.open('GET', GET.md + '.md', true);
-
     request.onload = function () {
         if (this.status >= 200 && this.status < 400) {
-            var random = ''+ (new Date()).getMilliseconds();
+            var random = '' + (new Date()).getMilliseconds();
             var resp = this.response.replace(/your key/g, GET.key).replace(/RANDOM/g, random);
             document.getElementById('markdown').innerHTML = parser.parse(resp);
+            inject_code = document.getElementsByTagName('pre')[0].innerHTML;
         }
     };
-
     request.onerror = function () {
         document.getElementById('markdown').innerHTML = "网络错误，请刷新重试";
-
     };
-
     request.send();
 
+    // 按钮点击事件
+    var new_address_map = {};
+    var alarm_minute = 15;
 
+    function update_code() {
+        var code = inject_code.replace('DEFAULT_TRANS', encodeURIComponent(JSON.stringify(new_address_map))).replace('DEFAULT_ALARM', alarm_minute);
+        document.getElementsByTagName('pre')[0].innerHTML = code;
+    }
+
+    function set_alarm(that) {
+        alarm_minute = prompt("请输入上课提前提醒时间（分钟）", "15");
+        if (!alarm_minute) return;
+        update_code();
+        that.innerText = '设置提醒时间(已设置提前' + alarm_minute + '分钟提醒)'
+    }
+
+    function set_trans() {
+        var cname = prompt("请输入要更改的课程的完整名称", "");
+        if (!cname) return;
+        var address = prompt('请输入"' + cname + '"修改后的上课地点', "");
+        if (!address) return;
+
+        var t = document.getElementById('new_address');
+        t.style.padding = '8px';
+        if (!t.innerText) t.innerHTML = "需要更新的上课地点: ";
+        new_address_map[cname] = address;
+        t.innerHTML = t.innerHTML + ' <br/>' + cname + ' -> ' + address;
+
+        update_code();
+    }
+
+    function copy_code(that) {
+        function copy_text(val) {
+            const input = document.createElement('textarea');
+            input.setAttribute('readonly', 'readonly');
+            input.innerHTML = val;
+            // input.setAttribute('value', val);
+            document.body.appendChild(input);
+            input.select();
+            // input.setSelectionRange(0, val.length);
+            if (document.execCommand('copy')) {
+                document.execCommand('copy');
+            }
+            document.body.removeChild(input);
+        }
+
+        var code = document.getElementsByTagName('pre')[0].innerText;
+        copy_text(code);
+        that.innerText = "点此复制以上代码(已复制)";
+
+    }
 </script>
 </html>

@@ -32,15 +32,27 @@ class ICSHandler(RequestHandler):
     @coroutine
     def post(self):
         raw_data = self.get_body_argument('data')
-        alarm_minute = int(self.get_body_argument('alarm_minute', 15))
+        try:
+            alarm_minute = int(self.get_body_argument('alarm_minute', 15))
+        except ValueError:
+            alarm_minute = 15
+        try:
+            trans = json.loads(self.get_body_argument('trans', '{}'))
+        except:
+            trans = {}
 
         try:
             schedules = extract_schedule(raw_data)
         except:
+            # 记录出错数据
             open('%s/../error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
             raise
-        apple_cal = CalUtil.get_calander(schedules, alarm_minute=alarm_minute, use_recurrence=True)  # ios平台开启提醒和循环事件
-        cal = CalUtil.get_calander(schedules, alarm_minute=None)  # outlook不支持提醒设置
+
+        # 更新上课地点
+        new_schedules = map(lambda i: i._replace(address=trans.get(i.name, i.address)), schedules)
+
+        apple_cal = CalUtil.get_calander(new_schedules, alarm_minute=alarm_minute, use_recurrence=True)  # ios平台开启提醒和循环事件
+        cal = CalUtil.get_calander(new_schedules, alarm_minute=None)  # outlook不支持提醒设置
 
         # CalUtil.save_cal('out.ics', cal)
 

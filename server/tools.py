@@ -19,8 +19,8 @@ def set_logger_to_file(logger, filename, level=logging.WARNING, propagate=False)
     logger.propagate = propagate
 
 
-# (0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他)
-ScheduleItem = namedtuple('ScheduleItem', 'name weeks day time address teacher class_no desc')
+# (0课程名称,1起始周次,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他)
+ScheduleItem = namedtuple('ScheduleItem', 'name week_range day time address teacher class_no desc')
 
 
 def extract_schedule(raw_data):
@@ -49,12 +49,12 @@ def extract_schedule(raw_data):
                         print(teacher_time[1].text())
                         return None
 
-                    weeks = list(range(int(time_info.group(1)), int(time_info.group(2)) + 1))
+                    week_range = (int(time_info.group(1)), int(time_info.group(2)))
                     time = (int(time_info.group(3)), int(time_info.group(4)))
                     address = infos[2].text()
                     # class_no = infos[3].text()
 
-                    res.append(ScheduleItem(name, weeks, day, time, address, teacher, '', credit))
+                    res.append(ScheduleItem(name, week_range, day, time, address, teacher, '', credit))
     return res
 
 

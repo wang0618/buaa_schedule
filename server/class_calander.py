@@ -5,7 +5,11 @@ import logging
 from datetime import datetime, date, timedelta
 
 import pytz
-from icalendar import Calendar, Event, vDatetime, Alarm
+from icalendar import Calendar, Event, vDatetime, Alarm, vText
+from collections import namedtuple
+
+# (0课程名称,1起始周次,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他)
+ScheduleItem = namedtuple('ScheduleItem', 'name week_range day time address teacher class_no desc')
 
 
 class ClassTime:
@@ -67,60 +71,69 @@ class CalUtil:
         for week in weeks:
             try:
                 t = ClassTime.get_class_time(week, day, nums[0])
+                res.append(t)
             except AssertionError as e:
                 logging.error('get a error in classtime:' + str(e))
                 continue
-            res.append(t)
-        # return b','.join(res)
         return res
 
     @classmethod
-    def __get_recurrence_event(cls, c):
-        # (0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他)
+    def __add_alarm_for_event(cls, event, minute=15):
+        alarm = Alarm()
+        alarm.add('trigger', timedelta(minutes=-minute))
+        alarm.add('action', 'display')
+        event.add_component(alarm)
+
+    @classmethod
+    def __get_recurrence_event(cls, c: ScheduleItem, alarm_minute):
         event = Event()
-        event.add('summary', c[0])  # title
-        event.add('dtstart', ClassTime.get_class_time(c[1][0], c[2], c[3][0]))
-        event.add('dtend', ClassTime.get_class_time(c[1][0], c[2], c[3][1], False))
-        event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c[5], c[6], c[7]))
-        event.add('location', c[4])
-        event.add('RDATE', cls.__get_rdate(c[1], c[2], c[3]), parameters=dict(TZID='Asia/Shanghai'))
-        # event['RDATE;TZID=Asia/Shanghai'] = cls.__get_rdate(c[1], c[2], c[3])
-        # event['rrule'] = vText('FREQ=WEEKLY;COUNT=5;INTERVAL=2')
+        event.add('summary', c.name)  # title
+        event.add('uid', '%s-%s_%s_%s-%s' % (*c.week_range, c.day, c.time[0], c.time[1]))  # 不同日程，uid需要不同
+        event.add('dtstart', ClassTime.get_class_time(c.week_range[0], c.day, c.time[0]))
+        event.add('dtend', ClassTime.get_class_time(c.week_range[0], c.day, c.time[1], start=False))
+        event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c.teacher, c.class_no, c.desc))
+        event.add('location', c.address)
+        # event.add('RDATE', cls.__get_rdate(c.weeks, c.day, c.time), parameters=dict(TZID='Asia/Shanghai', VALUE='DATE-TIME'))  # ios 不支持 RDATE
+        cnt = c.week_range[1] - c.week_range[0] + 1  # 总共上课周数
+        # event['rrule'] = vText('FREQ=WEEKLY;COUNT=5;INTERVAL=1')
+        event.add('rrule', {'freq': 'weekly', 'interval': 1, 'count': cnt})
+
+        if alarm_minute != None:
+            # 添加提醒, outlook 网页版貌似不支持提醒设置
+            cls.__add_alarm_for_event(event, alarm_minute)
+
         return event
 
     @classmethod
-    def __get_events(cls, c, alarm_minute=15):
+    def __get_events(cls, c: ScheduleItem, alarm_minute=15):
         """
         :param c: 课程列表
         :param alarm_minute: 提醒时间
         """
-        # (0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他)
-        for week in c[1]:
+
+        for week in range(c.week_range[0], c.week_range[1] + 1):
             event = Event()
-            event.add('summary', c[0])  # title
-            event.add('uid', '%s_%s_%s-%s' % (week, c[2], c[3][0], c[3][1]))  # uid
+            event.add('summary', c.name)  # title
+            event.add('uid', '%s_%s_%s-%s' % (week, c.day, c.time[0], c.time[1]))  # 不同日程，uid需要不同
             try:
-                event.add('dtstart', ClassTime.get_class_time(week, c[2], c[3][0]))
-                event.add('dtend', ClassTime.get_class_time(week, c[2], c[3][1], False))
+                event.add('dtstart', ClassTime.get_class_time(week, c.day, c.time[0]))
+                event.add('dtend', ClassTime.get_class_time(week, c.day, c.time[1], start=False))
             except AssertionError as e:
                 logging.error('get a error in classtime:' + str(e))
                 continue
-            event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c[5], c[6], c[7]))
-            event.add('location', c[4])
+            event.add('DESCRIPTION', '任课教师:%s\n上课班号:%s\n%s' % (c.teacher, c.class_no, c.desc))
+            event.add('location', c.address)
 
             if alarm_minute != None:
                 # 添加提醒, outlook 网页版貌似不支持提醒设置
-                alarm = Alarm()
-                alarm.add('trigger', timedelta(minutes=-alarm_minute))
-                alarm.add('action', 'display')
-                event.add_component(alarm)
+                cls.__add_alarm_for_event(event, alarm_minute)
 
             yield event
 
     @classmethod
     def get_calander(cls, classtables, use_recurrence=False, alarm_minute=None):
         """
-        :param classtables: [(0课程名称,1周次列表,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他),..]
+        :param classtables: [ScheduleItem(0课程名称,1起始周次,2上课星期,3节次元组,4上课地点,5任课教师,6上课班号,7其他),..]
         :param use_recurrence: 是否使用 循环事件 生成ics, 某些日历软件可能无法识别使用 循环事件 生成的ics
         :param alarm_minute: 提前提醒时间
         :return:
@@ -133,7 +146,7 @@ class CalUtil:
 
         for i in classtables:
             if use_recurrence:
-                cal.add_component(cls.__get_recurrence_event(i))
+                cal.add_component(cls.__get_recurrence_event(i, alarm_minute=alarm_minute))
             else:
                 try:
                     for event in cls.__get_events(i, alarm_minute=alarm_minute):

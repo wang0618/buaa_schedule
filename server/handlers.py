@@ -49,7 +49,7 @@ class ICSHandler(RequestHandler):
             raise
 
         # 更新上课地点
-        new_schedules = map(lambda i: i._replace(address=trans.get(i.name, i.address)), schedules)
+        new_schedules = list(map(lambda i: i._replace(address=trans.get(i.name, i.address)), schedules))
 
         apple_cal = CalUtil.get_calander(new_schedules, alarm_minute=alarm_minute, use_recurrence=True)  # ios平台开启提醒和循环事件
         cal = CalUtil.get_calander(new_schedules, alarm_minute=None)  # outlook不支持提醒设置

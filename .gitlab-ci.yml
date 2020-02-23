@@ -15,5 +15,3 @@ build:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
     - docker image push $CONTAINER_IMAGE:latest
     - docker image push $CONTAINER_IMAGE:$CI_BUILD_REF
-  only:
-    - master

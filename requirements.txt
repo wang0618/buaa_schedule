@@ -3,4 +3,4 @@ pytz>=2017.2
 icalendar>=3.11.7
 pyquery>=1.4.0
 IPython>=7.4.0
-qiniu>=7.2.6
+qiniu>=7.2

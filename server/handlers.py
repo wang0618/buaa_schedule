@@ -16,10 +16,8 @@ class ICSHandler(RequestHandler):
     executor = ThreadPoolExecutor(max_workers=8)
 
     def set_default_headers(self):
-        if self.request.headers.get('origin', '').startswith('https://gsmis.e.buaa.edu.cn'):
-            self.set_header("Access-Control-Allow-Origin", "https://gsmis.e.buaa.edu.cn")
-        else:
-            self.set_header("Access-Control-Allow-Origin", "http://gsmis.buaa.edu.cn")
+        if 'buaa.edu.cn' in self.request.headers.get('origin', ''):
+            self.set_header("Access-Control-Allow-Origin", "*")
 
         self.set_header("Access-Control-Allow-Headers", "x-requested-with")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')

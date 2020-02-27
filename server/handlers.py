@@ -1,12 +1,11 @@
 import json
 import os
 from tempfile import NamedTemporaryFile
-
+from concurrent.futures import ThreadPoolExecutor
 from qiniu import Auth, put_data
-from tornado.gen import coroutine
 from tornado.web import RequestHandler
 from tornado.web import StaticFileHandler
-
+from tornado.ioloop import IOLoop
 from server.class_calander import CalUtil
 from server.setting import project_dir
 from server.setting import qiniu_access_key, qiniu_bucket_name, qiniu_secret_key
@@ -14,6 +13,7 @@ from server.tools import extract_schedule, md5
 
 
 class ICSHandler(RequestHandler):
+    executor = ThreadPoolExecutor(max_workers=8)
 
     def set_default_headers(self):
         if self.request.headers.get('origin', '').startswith('https://gsmis.e.buaa.edu.cn'):
@@ -29,8 +29,7 @@ class ICSHandler(RequestHandler):
         self.set_status(200)
         self.error('请求出错, 您可以向开发者反馈此问题')
 
-    @coroutine
-    def post(self):
+    async def post(self):
         raw_data = self.get_body_argument('data')
         try:
             alarm_minute = int(self.get_body_argument('alarm_minute', 15))
@@ -45,29 +44,33 @@ class ICSHandler(RequestHandler):
             schedules = extract_schedule(raw_data)
         except:
             # 记录出错数据
-            open('%s/../error_data/%s.ics' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
+            open('%s/../error_data/%s.html' % (project_dir, md5(raw_data)), 'w', encoding='utf8').write(raw_data)
             raise
 
         # 更新上课地点
         new_schedules = list(map(lambda i: i._replace(address=trans.get(i.name, i.address)), schedules))
 
-        apple_cal = CalUtil.get_calander(new_schedules, alarm_minute=alarm_minute, use_recurrence=True)  # ios平台开启提醒和循环事件
+        apple_cal = CalUtil.get_calander(new_schedules, alarm_minute=alarm_minute,
+                                         use_recurrence=True)  # ios平台开启提醒和循环事件
         cal = CalUtil.get_calander(new_schedules, alarm_minute=None)  # outlook不支持提醒设置
 
         # CalUtil.save_cal('out.ics', cal)
 
-        # 保存到七牛云上
-        q = Auth(qiniu_access_key, qiniu_secret_key)
         key = md5(raw_data)
+        # 将课表文件异步保存到七牛云上
+        await IOLoop.current().run_in_executor(self.executor, self.save_to_qiniu, key, cal.to_ical(), apple_cal.to_ical())
+
+        self.succeed(key)
+
+    async def save_to_qiniu(self, key, data, app_data):
+        q = Auth(qiniu_access_key, qiniu_secret_key)
         filename = '%s.ics' % key
         token = q.upload_token(qiniu_bucket_name, filename, 3600 * 24 * 200)
-        put_data(token, filename, cal.to_ical(), mime_type='text/calendar')
+        put_data(token, filename, data, mime_type='text/calendar')
 
         filename = '%s_apple.ics' % key
         token = q.upload_token(qiniu_bucket_name, filename, 3600 * 24 * 200)
-        put_data(token, filename, apple_cal.to_ical(), mime_type='text/calendar')
-
-        self.succeed(key)
+        put_data(token, filename, app_data, mime_type='text/calendar')
 
     def succeed(self, data=''):
         self.write(json.dumps({'data': data, 'status': True}))

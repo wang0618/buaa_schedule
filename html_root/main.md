@@ -12,7 +12,7 @@
 ### 0. 在电脑端打开本页面 (https://buaa.wecqu.com)
 
 ### 1. 在电脑端使用Chrome浏览器(或Edge浏览器)打开课表页面
-访问 `http://gsmis.buaa.edu.cn/`, 选择“查看课表”
+访问 `http://gsmis.buaa.edu.cn/` 或使用北航VPN打开研究生选课系统, 选择“查看课表”
 
 ### 2. 设置提醒时间和更改课程上课地点
 <div onclick="set_alarm(this)" class="btn">设置提醒时间</div> <div onclick="set_trans(this)" class="btn">更改课程上课地点</div> <div class="clearfix"></div> <div id="new_address"></div>
@@ -24,12 +24,12 @@
 在课表页面下按`F12`打开浏览器调试面板，在`Console`栏(Edge浏览器中为`控制台`栏)中粘贴以下代码，并按下回车执行。之后根据页面提示选择导入不同平台。
 ```js
 var request = new XMLHttpRequest();
-request.open('POST', 'http://buaa.wecqu.com/api/ics', true);
+request.open('POST', 'https://buaa.wecqu.com/api/ics', true);
 request.onload = function() {
   if (this.status >= 200 && this.status < 400) {
     var data = JSON.parse(this.response);
     if(!data.status) alert(data.message);
-    else window.open('http://buaa.wecqu.com/result.html?key='+data.data);
+    else window.open('https://buaa.wecqu.com/result.html?key='+data.data);
   }
 };
 request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');

@@ -6,8 +6,8 @@ steps:
   - name: docker
     image: plugins/docker
     settings:
-      repo: ${DockerRegistry}/${DRONE_REPO}
-      registry: ${DockerRegistry}
+      repo: 10.1.1.6:35000/${DRONE_REPO}
+      registry: 10.1.1.6:35000
       insecure: true
       mirror: "https://gecwf5gs.mirror.aliyuncs.com"
       tags:
